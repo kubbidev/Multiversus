@@ -4,6 +4,10 @@ import me.kubbidev.multiversus.api.MultiversusApiProvider;
 import me.kubbidev.multiversus.brigadier.MultiBrigadier;
 import me.kubbidev.multiversus.config.ConfigKeys;
 import me.kubbidev.multiversus.config.generic.adapter.ConfigurationAdapter;
+import me.kubbidev.multiversus.core.listener.AttackEventListener;
+import me.kubbidev.multiversus.core.manager.DamageManager;
+import me.kubbidev.multiversus.core.manager.EntityManager;
+import me.kubbidev.multiversus.core.manager.FakeEventManager;
 import me.kubbidev.multiversus.dependencies.Dependency;
 import me.kubbidev.multiversus.event.AbstractEventBus;
 import me.kubbidev.multiversus.listeners.BukkitConnectionListener;
@@ -33,6 +37,11 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
     private BukkitConnectionListener connectionListener;
     private BukkitCommandExecutor commandManager;
     private StandardUserManager userManager;
+
+    private DamageManager damageManager;
+    private EntityManager entityManager;
+
+    private final FakeEventManager fakeEventManager = new FakeEventManager();
 
     public FBukkitPlugin(FBukkitBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -71,6 +80,9 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
     protected void registerPlatformListeners() {
         this.connectionListener = new BukkitConnectionListener(this);
         this.bootstrap.getServer().getPluginManager().registerEvents(this.connectionListener, this.bootstrap.getLoader());
+
+        this.bootstrap.getServer().getPluginManager().registerEvents(this.damageManager, this.bootstrap.getLoader());
+        this.bootstrap.getServer().getPluginManager().registerEvents(new AttackEventListener(this), this.bootstrap.getLoader());
     }
 
     @Override
@@ -104,11 +116,17 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
                 }
             }
         }
+
+        this.bootstrap.getServer().getCommandMap().getKnownCommands()
+                .remove("callback");
     }
 
     @Override
     protected void setupManagers() {
         this.userManager = new StandardUserManager(this);
+
+        this.damageManager = new DamageManager(this);
+        this.entityManager = new EntityManager();
     }
 
     @Override
@@ -197,5 +215,17 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
     @Override
     public StandardUserManager getUserManager() {
         return this.userManager;
+    }
+
+    public DamageManager getDamageManager() {
+        return this.damageManager;
+    }
+
+    public EntityManager getEntityManager() {
+        return this.entityManager;
+    }
+
+    public FakeEventManager getFakeEventManager() {
+        return this.fakeEventManager;
     }
 }
