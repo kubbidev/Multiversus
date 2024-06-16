@@ -1,0 +1,308 @@
+####################################################################################################
+# +----------------------------------------------------------------------------------------------+ #
+# |                                       ___ ___      ___  __   __        __                    | #
+# |                         |\/| |  | |    |   |  \ / |__  |__) /__` |  | /__`                   | #
+# |                         |  | \__/ |___ |  _|_  v  |___ |  \ .__/ \__/ .__/                   | #
+# |                                                                                              | #
+# |                                      https://kubbidev.com                                    | #
+# |                                                                                              | #
+# |  DISCORD:     https://discord.kubbidev.com                                                   | #
+# |  BUG REPORTS: https://github.com/kubbidev/Multiversus/issues                                 | #
+# |                                                                                              | #
+# |  New options are not added to this file automatically. Default values are used if an         | #
+# |  option cannot be found.                                                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+####################################################################################################
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                      ESSENTIAL SETTINGS                                      | #
+# |                                                                                              | #
+# |                  Important settings that control how Multiversus functions.                  | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# If the servers own UUID cache/lookup facility should be used when there is no record for a player
+# already in Multiversus.
+#
+# - When this is set to 'false', commands using a player's username will not work unless the player
+#   has joined since Multiversus was first installed.
+# - To get around this, you can use a player's uuid directly in the command, or enable this option.
+# - When this is set to 'true', the server facility is used. This may use a number of methods,
+#   including checking the servers local cache, or making a request to the Mojang API.
+use-server-uuid-cache: false
+
+
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                       STORAGE SETTINGS                                       | #
+# |                                                                                              | #
+# |               Controls which storage method Multiversus will use to store data.              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# How the plugin should store data
+#
+# - Possible options:
+#
+#   |  Remote databases - require connection information to be configured below
+#   |=> MySQL
+#   |=> MariaDB (preferred over MySQL)
+#   |=> PostgreSQL
+#   |=> MongoDB
+#
+#   |  Flatfile/local database - don't require any extra configuration
+#   |=> H2 (preferred over SQLite)
+#   |=> SQLite
+#
+#   |  Readable & editable text files - don't require any extra configuration
+#   |=> YAML (.yml files)
+#   |=> JSON (.json files)
+#   |=> HOCON (.conf files)
+#   |=> TOML (.toml files)
+#   |
+#   | By default, user, group and track data is separated into different files. Data can be combined
+#   | and all stored in the same file by switching to a combined storage variant.
+#   | Just add '-combined' to the end of the storage-method, e.g. 'yaml-combined'
+#
+# - A H2 database is the default option.
+# - If you want to edit data manually in "traditional" storage files, we suggest using YAML.
+storage-method: h2
+
+# The following block defines the settings for remote database storage methods.
+#
+# - You don't need to touch any of the settings here if you're using a local storage method!
+# - The connection detail options are shared between all remote storage types.
+data:
+
+  # Define the address and port for the database.
+  # - The standard DB engine port is used by default
+  #   (MySQL: 3306, PostgreSQL: 5432, MongoDB: 27017)
+  # - Specify as "host:port" if differs
+  address: localhost
+
+  # The name of the database to store Multiversus data in.
+  # - This must be created already. Don't worry about this setting if you're using MongoDB.
+  database: minecraft
+
+  # Credentials for the database.
+  username: root
+  password: ''
+
+  # These settings apply to the MySQL connection pool.
+  # - The default values will be suitable for the majority of users.
+  # - Do not change these settings unless you know what you're doing!
+  pool-settings:
+
+    # Sets the maximum size of the MySQL connection pool.
+    # - Basically this value will determine the maximum number of actual
+    #   connections to the database backend.
+    # - More information about determining the size of connection pools can be found here:
+    #   https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing
+    maximum-pool-size: 10
+
+    # Sets the minimum number of idle connections that the pool will try to maintain.
+    # - For maximum performance and responsiveness to spike demands, it is recommended to not set
+    #   this value and instead allow the pool to act as a fixed size connection pool.
+    #   (set this value to the same as 'maximum-pool-size')
+    minimum-idle: 10
+
+    # This setting controls the maximum lifetime of a connection in the pool in milliseconds.
+    # - The value should be at least 30 seconds less than any database or infrastructure imposed
+    #   connection time limit.
+    maximum-lifetime: 1800000 # 30 minutes
+
+    # This setting controls how frequently the pool will 'ping' a connection in order to prevent it
+    # from being timed out by the database or network infrastructure, measured in milliseconds.
+    # - The value should be less than maximum-lifetime and greater than 30000 (30 seconds).
+    # - Setting the value to zero will disable the keepalive functionality.
+    keepalive-time: 0
+
+    # This setting controls the maximum number of milliseconds that the plugin will wait for a
+    # connection from the pool, before timing out.
+    connection-timeout: 5000 # 5 seconds
+
+    # This setting allows you to define extra properties for connections.
+    #
+    # By default, the following options are set to enable utf8 encoding. (you may need to remove
+    # these if you are using PostgreSQL)
+    #   useUnicode: true
+    #   characterEncoding: utf8
+    #
+    # You can also use this section to disable SSL connections, by uncommenting the 'useSSL' and
+    # 'verifyServerCertificate' options below.
+    properties:
+      useUnicode: true
+      characterEncoding: utf8
+      #useSSL: false
+      #verifyServerCertificate: false
+
+  # The prefix for all Multiversus SQL tables.
+  #
+  # - This only applies for remote SQL storage types (MySQL, MariaDB, etc).
+  # - Change this if you want to use different tables for different servers.
+  table-prefix: 'multiversus_'
+
+  # The prefix to use for all Multiversus MongoDB collections.
+  #
+  # - This only applies for the MongoDB storage type.
+  # - Change this if you want to use different collections for different servers. The default is no
+  # prefix.
+  mongodb-collection-prefix: ''
+
+  # The connection string URI to use to connect to the MongoDB instance.
+  #
+  # - When configured, this setting will override anything defined in the address, database,
+  #   username or password fields above.
+  # - If you have a connection string that starts with 'mongodb://' or 'mongodb+srv://', enter it
+  #   below.
+  # - For more information, please see https://docs.mongodb.com/manual/reference/connection-string/
+  mongodb-connection-uri: ''
+
+# Define settings for a "split" storage setup.
+#
+# - This allows you to define a storage method for each type of data.
+# - The connection options above still have to be correct for each type here.
+split-storage:
+  # Don't touch this if you don't want to use split storage!
+  enabled: false
+  methods:
+    # These options don't need to be modified if split storage isn't enabled.
+    user: h2
+    uuid: h2
+
+
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                            UPDATE PROPAGATION & MESSAGING SERVICE                            | #
+# |                                                                                              | #
+# |   Controls the ways in which Multiversus will sync data & notify other servers of changes.   | #
+# |     These options are documented on greater detail on the wiki under "Instant Updates".      | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# This option controls how frequently Multiversus will perform a sync task.
+#
+# - A sync task will refresh all data from the storage, and ensure that the most up-to-date data is
+#   being used by the plugin.
+# - This is disabled by default, as most users will not need it. However, if you're using a remote
+#   storage type without a messaging service setup, you may wish to set this to something like 3.
+# - Set to -1 to disable the task completely.
+sync-minutes: -1
+
+# If the file watcher should be enabled.
+#
+# - When using a file-based storage type, Multiversus can monitor the data files for changes, and
+#   automatically update when changes are detected.
+# - If you don't want this feature to be active, set this option to false.
+watch-files: true
+
+# Define which messaging service should be used by the plugin.
+#
+# - If enabled and configured, Multiversus will use the messaging service to inform other of changes.
+# - Data is NOT stored using this service. It is only used as a messaging platform.
+#
+# - Possible options:
+#   => sql       Uses the SQL database to form a queue system for communication. Will only work when
+#                'storage-method' is set to MySQL or MariaDB. This is chosen by default if the
+#                option is set to 'auto' and SQL storage is in use. Set to 'notsql' to disable this.
+#   => redis     Uses Redis pub-sub to push changes. Your server connection info must be configured
+#                below.
+#   => rabbitmq  Uses RabbitMQ pub-sub to push changes. Your server connection info must be
+#                configured below.
+#   => nats      Uses Nats pub-sub to push changes. Your server connection info must be
+#                configured below.
+#   => custom    Uses a messaging service provided using the Multiversus API.
+#   => auto      Attempts to automatically setup a messaging service using redis or sql.
+messaging-service: auto
+
+# Settings for Redis.
+# Port 6379 is used by default; set address to "host:port" if differs
+# Multiple Redis nodes can be specified in the same format as a string list under the name "addresses".
+redis:
+  enabled: false
+  address: localhost
+  username: ''
+  password: ''
+
+# Settings for Nats.
+# Port 4222 is used by default; set address to "host:port" if differs
+nats:
+  enabled: false
+  address: localhost
+  username: ''
+  password: ''
+
+# Settings for RabbitMQ.
+# Port 5672 is used by default; set address to "host:port" if differs
+rabbitmq:
+  enabled: false
+  address: localhost
+  vhost: '/'
+  username: 'guest'
+  password: 'guest'
+
+
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                    CUSTOMIZATION SETTINGS                                    | #
+# |                                                                                              | #
+# |              Settings that allow admins to customize the way Multiversus operates.           | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# If the plugin should check for "extra" permissions with users run Multiversus commands.
+#
+# - These extra permissions allow finer control over what users can do with each command, and who
+#   they have access to edit.
+# - Argument based permissions are *not* static, unlike the 'base' permissions, and will depend upon
+#   the arguments given within the command.
+argument-based-command-permissions: false
+
+
+
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                      FINE TUNING OPTIONS                                     | #
+# |                                                                                              | #
+# |     A number of more niche settings for tweaking and changing behaviour. The section also    | #
+# | contains toggles for some more specialised features. It is only necessary to make changes to | #
+# |                these options if you want to fine-tune Multiversus behaviour.                 | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# +----------------------------------------------------------------------------------------------+ #
+# | Miscellaneous (and rarely used) settings                                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# If Multiversus should rate-limit command executions.
+#
+# - When set to 'false', all players will be able to spam commands.
+#   Note that this option will only cover multiversus integrated commands and not vanilla or plugins
+#   provided commands.
+commands-rate-limit: true
+
+# If Multiversus should produce extra logging output when it handles logins.
+#
+# - Useful if you're having issues with UUID forwarding or data not being loaded.
+debug-logins: false
+
+# If Multiversus should allow usernames with non alphanumeric characters.
+#
+# - Note that due to the design of the storage implementation, usernames must still be 16 characters
+#   or less.
+allow-invalid-usernames: false
+
+# If Multiversus should attempt to register "Brigadier" command list data for its commands.
+register-command-list-data: true
+
+# If Multiversus should attempt to resolve Vanilla command target selectors for Multiversus commands.
+# See here for more info: https://minecraft.wiki/w/Target_selectors
+resolve-command-selectors: false
