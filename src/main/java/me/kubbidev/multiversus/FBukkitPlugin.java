@@ -9,6 +9,7 @@ import me.kubbidev.multiversus.core.manager.DamageManager;
 import me.kubbidev.multiversus.core.manager.EntityManager;
 import me.kubbidev.multiversus.core.manager.FakeEventManager;
 import me.kubbidev.multiversus.core.manager.IndicatorManager;
+import me.kubbidev.multiversus.core.metadata.Metadata;
 import me.kubbidev.multiversus.dependencies.Dependency;
 import me.kubbidev.multiversus.event.AbstractEventBus;
 import me.kubbidev.multiversus.listeners.BukkitConnectionListener;
@@ -162,6 +163,10 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
                 }
             });
         }
+
+        // setup metadata housekeeper runnable
+        Metadata.setupHousekeeper(this.bootstrap.getLoader());
+
         //noinspection resource
         getEventDispatcher().getEventBus().subscribe(ConfigReloadEvent.class, this::onConfigReload);
     }

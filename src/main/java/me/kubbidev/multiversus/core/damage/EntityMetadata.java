@@ -3,7 +3,6 @@ package me.kubbidev.multiversus.core.damage;
 import com.google.common.base.Preconditions;
 import me.kubbidev.multiversus.FBukkitPlugin;
 import me.kubbidev.multiversus.core.util.EquipmentSlot;
-import me.kubbidev.multiversus.plugin.MultiPlugin;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +18,7 @@ public class EntityMetadata {
         this.actionHand = actionHand;
     }
 
-    public MultiPlugin getPlugin() {
+    public FBukkitPlugin getPlugin() {
         return this.plugin;
     }
 

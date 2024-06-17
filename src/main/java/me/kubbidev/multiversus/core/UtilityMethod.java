@@ -49,4 +49,31 @@ public class UtilityMethod {
     public static boolean isWeapon(@Nullable ItemStack item) {
         return item != null && item.getType().getMaxDurability() > 0;
     }
+
+    /**
+     * Converts a camel case string (e.g., "MySimpleWord") to kebab-case (e.g., "my_simple_word").
+     *
+     * @param input the camel case string to be converted
+     * @return the converted kebab-case string, or the input string if it is null or empty
+     */
+    public static String convertToKebabCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
+        StringBuilder result = new StringBuilder();
+        char[] chars = input.toCharArray();
+
+        for (char c : chars) {
+            if (Character.isUpperCase(c)) {
+                if (result.length() != 0) {
+                    result.append('_');
+                }
+                result.append(Character.toLowerCase(c));
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
 }
