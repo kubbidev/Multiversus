@@ -1,6 +1,8 @@
 package me.kubbidev.multiversus.core;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.metadata.Metadatable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -16,6 +18,16 @@ public class UtilityMethod {
      * The random number generator used by the utility methods.
      */
     private static final Random random = new Random();
+
+    /**
+     * Checks if an entity is vanished based on its metadata.
+     *
+     * @param entity The entity to check.
+     * @return true if the entity is vanished, false otherwise.
+     */
+    public static boolean isVanished(Metadatable entity) {
+        return entity.getMetadata("vanished").stream().anyMatch(MetadataValue::asBoolean);
+    }
 
     /**
      * Checks if an item stack is air or null.

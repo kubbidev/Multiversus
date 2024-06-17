@@ -9,10 +9,12 @@ import me.kubbidev.multiversus.storage.StorageType;
 import me.kubbidev.multiversus.storage.implementation.split.SplitStorageType;
 import me.kubbidev.multiversus.storage.misc.StorageCredentials;
 
+import java.text.DecimalFormatSymbols;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 import static me.kubbidev.multiversus.config.generic.key.ConfigKeyFactory.*;
 
@@ -225,6 +227,29 @@ public final class ConfigKeys {
      * If Multiversus should allow usernames with non alphanumeric characters.
      */
     public static final ConfigKey<Boolean> ALLOW_INVALID_USERNAMES = booleanKey("allow-invalid-usernames", false);
+
+    /**
+     * Main number formatting separator symbol used in every decimal formatter across the plugin.
+     */
+    public static final ConfigKey<DecimalFormatSymbols> DECIMAL_FORMAT_SEPARATOR = notReloadable(key(c -> {
+        Function<String, Character> getFirstChar = string -> {
+            return string == null || string.isEmpty() ? '.' : string.charAt(0);
+        };
+
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ROOT);
+        decimalFormatSymbols.setDecimalSeparator(getFirstChar.apply(c.getString("decimal-format-separator", ".")));
+        return decimalFormatSymbols;
+    }));
+
+    /**
+     * Whether or not Multiversus should display damage indicators.
+     */
+    public static final ConfigKey<Boolean> INDICATOR_DAMAGE_ENABLED = booleanKey("game-indicators.damage.enabled", true);
+
+    /**
+     * Whether or not Multiversus should display regeneration indicators.
+     */
+    public static final ConfigKey<Boolean> INDICATOR_REGENERATION_ENABLED = booleanKey("game-indicators.regeneration.enabled", true);
 
     /**
      * A list of the keys defined in this class.

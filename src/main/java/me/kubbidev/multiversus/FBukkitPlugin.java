@@ -8,6 +8,7 @@ import me.kubbidev.multiversus.core.listener.AttackEventListener;
 import me.kubbidev.multiversus.core.manager.DamageManager;
 import me.kubbidev.multiversus.core.manager.EntityManager;
 import me.kubbidev.multiversus.core.manager.FakeEventManager;
+import me.kubbidev.multiversus.core.manager.IndicatorManager;
 import me.kubbidev.multiversus.dependencies.Dependency;
 import me.kubbidev.multiversus.event.AbstractEventBus;
 import me.kubbidev.multiversus.listeners.BukkitConnectionListener;
@@ -17,6 +18,7 @@ import me.kubbidev.multiversus.plugin.AbstractMultiPlugin;
 import me.kubbidev.multiversus.plugin.util.AbstractConnectionListener;
 import me.kubbidev.multiversus.sender.Sender;
 import net.multiversus.api.Multiversus;
+import net.multiversus.api.event.sync.ConfigReloadEvent;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
@@ -41,6 +43,7 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
     private DamageManager damageManager;
     private EntityManager entityManager;
 
+    private final IndicatorManager indicatorManager = new IndicatorManager();
     private final FakeEventManager fakeEventManager = new FakeEventManager();
 
     public FBukkitPlugin(FBukkitBootstrap bootstrap) {
@@ -81,6 +84,7 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
         this.connectionListener = new BukkitConnectionListener(this);
         this.bootstrap.getServer().getPluginManager().registerEvents(this.connectionListener, this.bootstrap.getLoader());
 
+        this.damageManager = new DamageManager(this);
         this.bootstrap.getServer().getPluginManager().registerEvents(this.damageManager, this.bootstrap.getLoader());
         this.bootstrap.getServer().getPluginManager().registerEvents(new AttackEventListener(this), this.bootstrap.getLoader());
     }
@@ -124,9 +128,10 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
     @Override
     protected void setupManagers() {
         this.userManager = new StandardUserManager(this);
-
-        this.damageManager = new DamageManager(this);
         this.entityManager = new EntityManager();
+
+        // load indicators from configuration file
+        this.indicatorManager.load(this);
     }
 
     @Override
@@ -157,6 +162,8 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
                 }
             });
         }
+        //noinspection resource
+        getEventDispatcher().getEventBus().subscribe(ConfigReloadEvent.class, this::onConfigReload);
     }
 
     @Override
@@ -182,6 +189,11 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
 
     private static boolean isAsyncTabCompleteSupported() {
         return classExists("com.destroystokyo.paper.event.server.AsyncTabCompleteEvent");
+    }
+
+    private void onConfigReload(ConfigReloadEvent e) {
+        // reload indicators configuration as well
+        this.indicatorManager.reload(this);
     }
 
     @Override

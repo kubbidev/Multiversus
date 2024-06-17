@@ -265,6 +265,10 @@ rabbitmq:
 #   the arguments given within the command.
 argument-based-command-permissions: false
 
+# Main number formatting separator symbol used in every decimal formatter across the plugin.
+# Note: restart your server when changing this option to propagate changes
+decimal-format-separator: .
+
 
 
 
@@ -277,6 +281,28 @@ argument-based-command-permissions: false
 # |                these options if you want to fine-tune Multiversus behaviour.                 | #
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
+
+# +----------------------------------------------------------------------------------------------+ #
+# | Game indicators settings                                                                     | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Multiversus can displaye Indicators in the game for various reasons.
+#
+# Examples:
+# - In the event of damage
+# - When you're regenerating your life
+game-indicators:
+  # Indicators displayed when an entity suffers damage from any possible source.
+  # Note: a server restart is required to propagate the changes.
+  damage:
+    # Whether or not Multiversus should display damage indicators.
+    enabled: true
+
+  # Indicators displayed when an entity regenerates its life in all possible ways.
+  # Note: a server restart is required to propagate the changes.
+  regeneration:
+    # Whether or not Multiversus should display regeneration indicators.
+    enabled: true
 
 # +----------------------------------------------------------------------------------------------+ #
 # | Miscellaneous (and rarely used) settings                                                     | #
