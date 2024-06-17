@@ -33,7 +33,7 @@ allprojects {
     }
 
     // make fullVersion accessible in subprojects
-    project.extra["fullVersion"] = "1.0.2"
+    project.extra["fullVersion"] = "1.0.3"
     project.extra["apiVersion"] = "1.0"
 }
 

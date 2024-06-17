@@ -5,10 +5,7 @@ import me.kubbidev.multiversus.brigadier.MultiBrigadier;
 import me.kubbidev.multiversus.config.ConfigKeys;
 import me.kubbidev.multiversus.config.generic.adapter.ConfigurationAdapter;
 import me.kubbidev.multiversus.core.listener.AttackEventListener;
-import me.kubbidev.multiversus.core.manager.DamageManager;
-import me.kubbidev.multiversus.core.manager.EntityManager;
-import me.kubbidev.multiversus.core.manager.FakeEventManager;
-import me.kubbidev.multiversus.core.manager.IndicatorManager;
+import me.kubbidev.multiversus.core.manager.*;
 import me.kubbidev.multiversus.core.metadata.Metadata;
 import me.kubbidev.multiversus.dependencies.Dependency;
 import me.kubbidev.multiversus.event.AbstractEventBus;
@@ -43,6 +40,7 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
 
     private DamageManager damageManager;
     private EntityManager entityManager;
+    private SkillManager skillManager;
 
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final FakeEventManager fakeEventManager = new FakeEventManager();
@@ -131,6 +129,9 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
         this.userManager = new StandardUserManager(this);
         this.entityManager = new EntityManager();
 
+        this.skillManager = new SkillManager(this);
+        this.skillManager.load(false);
+
         // load indicators from configuration file
         this.indicatorManager.load(this);
     }
@@ -197,6 +198,8 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
     }
 
     private void onConfigReload(ConfigReloadEvent e) {
+        this.skillManager.load(true);
+
         // reload indicators configuration as well
         this.indicatorManager.reload(this);
     }
@@ -240,6 +243,10 @@ public class FBukkitPlugin extends AbstractMultiPlugin {
 
     public EntityManager getEntityManager() {
         return this.entityManager;
+    }
+
+    public SkillManager getSkillManager() {
+        return this.skillManager;
     }
 
     public FakeEventManager getFakeEventManager() {

@@ -5,9 +5,7 @@ import me.kubbidev.multiversus.core.skill.Skill;
 import me.kubbidev.multiversus.core.skill.SkillMetadata;
 import me.kubbidev.multiversus.core.skill.result.SkillResult;
 
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 /**
  * {@link SkillHandler} are skills subtracted from all of there data.
@@ -16,6 +14,7 @@ import java.util.Random;
  */
 public abstract class SkillHandler<T extends SkillResult> {
     private final String id;
+    private final Set<String> parameters = new HashSet<>();
 
     /**
      * Global random number generator used throughout the class.
@@ -30,6 +29,8 @@ public abstract class SkillHandler<T extends SkillResult> {
                 .toLowerCase(Locale.ROOT)
                 .replace("-", "_")
                 .replace(" ", "_");
+
+        registerParameters("cooldown", "mana", "stamina", "timer", "delay");
     }
 
     /**
@@ -41,11 +42,35 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = id.toLowerCase(Locale.ROOT)
                 .replace("-", "_")
                 .replace(" ", "_");
+
+        registerParameters("cooldown", "mana", "stamina", "timer", "delay");
     }
 
     public String getId() {
         return this.id;
     }
+
+    public void registerParameters(String... params) {
+        registerParameters(Arrays.asList(params));
+    }
+
+    public void registerParameters(Collection<String> params) {
+        this.parameters.addAll(params);
+    }
+
+    /**
+     * Skill parameters are specific numerical values that
+     * determine how powerful a skill is.
+     * <p>
+     * Parameters can be the skill damage, cooldown, duration
+     * if it applies some potion effect, etc.
+     *
+     * @return The set of all possible parameters of that skill
+     */
+    public Set<String> getParameters() {
+        return this.parameters;
+    }
+
 
     /**
      * Gets the skill result used to check if the skill can be cast.
